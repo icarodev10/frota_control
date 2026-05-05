@@ -54,13 +54,13 @@ let mapaMotoristas = {};
 let mapaVeiculos = {};
 
 // --- CONFIGURAÇÕES DE API ---
-const API_URL = "http://127.0.0.1:8000/veiculos/";
+const API_URL = "https://frota-control.onrender.com/veiculos/";
 let opcoesMotoristasGlobais = '<option value="">Carregando...</option>';
 
 // --- 1. MOTORISTAS ---
 async function carregarMotoristas() {
     try {
-        const resposta = await fetch("http://127.0.0.1:8000/motoristas/");
+        const resposta = await fetch("https://frota-control.onrender.com/motoristas/");
         const motoristas = await resposta.json();
 
         opcoesMotoristasGlobais = '<option value="">Selecione o motorista...</option>';
@@ -236,7 +236,7 @@ async function finalizarAcaoViagem(acao) {
     let dados = { veiculo_id, km_inicial, motorista_id, km_final };
 
     try {
-        const res = await fetch("http://127.0.0.1:8000/viagens/", {
+        const res = await fetch("https://frota-control.onrender.com/viagens/", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dados)
@@ -288,7 +288,7 @@ async function salvarMotorista() {
     }
 
     try {
-        const res = await fetch("http://127.0.0.1:8000/motoristas/", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nome, cnh, status_cnh }) });
+        const res = await fetch("https://frota-control.onrender.com/motoristas/", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ nome, cnh, status_cnh }) });
         if (res.ok) {
             fecharModalGlobal();
             carregarMotoristas();
@@ -304,7 +304,7 @@ async function salvarMulta() {
     const pontos = parseInt(document.getElementById("inputPontosMulta").value);
     if (!veiculo_id || !pontos) return avisarErro("Atenção", "Preencha o ID do carro e os pontos.");
     try {
-        const res = await fetch("http://127.0.0.1:8000/infracoes/", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ veiculo_id, pontos }) });
+        const res = await fetch("https://frota-control.onrender.com/infracoes/", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ veiculo_id, pontos }) });
         const dados = await res.json();
         if (res.ok) {
             fecharModalGlobal();
@@ -329,7 +329,7 @@ function carregarTabelaMotoristas(motoristas) {
 
 async function carregarTabelaViagens() {
     try {
-        const res = await fetch("http://127.0.0.1:8000/viagens/");
+        const res = await fetch("https://frota-control.onrender.com/viagens/");
         const viagens = await res.json();
         const tbody = document.getElementById("tabela-viagens");
         if (!tbody) return;
@@ -353,7 +353,7 @@ async function carregarTabelaViagens() {
 
 async function carregarTabelaInfracoes() {
     try {
-        const res = await fetch("http://127.0.0.1:8000/infracoes/");
+        const res = await fetch("https://frota-control.onrender.com/infracoes/");
         const infracoes = await res.json();
         const tbody = document.getElementById("tabela-infracoes");
         if (!tbody) return;
