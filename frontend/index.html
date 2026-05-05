@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FrotaControl | Gestão de Frota</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Cor vinho personalizada para usar no Tailwind */
+        .bg-vinho {
+            background-color: #5e1724;
+        }
+
+        .text-vinho {
+            color: #5e1724;
+        }
+
+        .border-vinho {
+            border-color: #5e1724;
+        }
+
+        .hover-bg-vinho:hover {
+            background-color: #7a1e2f;
+        }
+    </style>
+</head>
+
+<body class="bg-zinc-900 text-gray-200 font-sans antialiased p-8">
+
+    <div class="max-w-6xl mx-auto">
+
+        <header
+            class="bg-vinho p-6 rounded-lg shadow-xl flex justify-between items-center mb-8 border-b-4 border-zinc-950">
+            <div class="flex items-center gap-4">
+                <div class="bg-zinc-950 p-3 rounded-full shadow-inner"><span class="text-3xl">🛣️</span></div>
+                <div>
+                    <h1 class="text-3xl font-extrabold text-white tracking-wider">FROTA<span
+                            class="text-zinc-400 font-light">CONTROL</span></h1>
+                    <p class="text-zinc-300 text-sm mt-1">Gestão Corporativa de Veículos</p>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="abrirModalDinamico('multa')"
+                    class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-colors shadow-lg">📸
+                    Radar</button>
+                <button onclick="abrirModalDinamico('novo_motorista')"
+                    class="bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2 px-4 rounded transition-colors shadow-lg border border-zinc-600">+
+                    Motorista</button>
+                <button onclick="abrirModalDinamico('novo_veiculo')"
+                    class="bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2 px-4 rounded transition-colors shadow-lg border border-zinc-600">+
+                    Veículo</button>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-zinc-800 border-l-4 border-vinho p-6 rounded-lg shadow-lg">
+                <h3 class="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Total da Frota</h3>
+                <p id="dash-total" class="text-4xl font-bold text-white mt-2">0</p>
+            </div>
+            <div class="bg-zinc-800 border-l-4 border-green-600 p-6 rounded-lg shadow-lg">
+                <h3 class="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Carros Livres</h3>
+                <p id="dash-livres" class="text-4xl font-bold text-white mt-2">0</p>
+            </div>
+            <div class="bg-zinc-800 border-l-4 border-orange-500 p-6 rounded-lg shadow-lg">
+                <h3 class="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Carros em Uso</h3>
+                <p id="dash-em-uso" class="text-4xl font-bold text-white mt-2">0</p>
+            </div>
+        </div>
+
+        <h2 class="text-xl font-bold text-white mb-4 border-b border-zinc-700 pb-2">Status dos Veículos</h2>
+        <div id="grid-veiculos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+
+            <div class="bg-zinc-800 p-6 rounded-lg shadow-lg border border-zinc-700">
+                <h2 class="text-xl font-bold text-white mb-4">Motoristas Cadastrados</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-zinc-300">
+                        <thead class="bg-zinc-900 text-zinc-400">
+                            <tr>
+                                <th class="p-3 rounded-tl-lg">ID</th>
+                                <th class="p-3">Nome</th>
+                                <th class="p-3">CNH</th>
+                                <th class="p-3 rounded-tr-lg">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-motoristas" class="divide-y divide-zinc-700"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-zinc-800 p-6 rounded-lg shadow-lg border border-zinc-700">
+                <h2 class="text-xl font-bold text-white mb-4">Registro de Infrações 🚨</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-zinc-300">
+                        <thead class="bg-zinc-900 text-zinc-400">
+                            <tr>
+                                <th class="p-3 rounded-tl-lg">Carro Placa</th>
+                                <th class="p-3">Motorista Culpado</th>
+                                <th class="p-3">Pontos</th>
+                                <th class="p-3 rounded-tr-lg">Decisão</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-infracoes" class="divide-y divide-zinc-700"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-zinc-800 p-6 rounded-lg shadow-lg border border-zinc-700 mb-12">
+            <h2 class="text-xl font-bold text-white mb-4">Histórico de Viagens 🛣️</h2>
+            <div class="mb-4">
+                <input type="text" id="inputPesquisaViagens" onkeyup="filtrarViagens()"
+                    placeholder="🔍 Pesquisar por ID, Carro ou Motorista..."
+                    class="w-full bg-zinc-900 border border-zinc-600 text-white rounded-md p-3 focus:ring-vinho outline-none">
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-zinc-300">
+                    <thead class="bg-zinc-900 text-zinc-400">
+                        <tr>
+                            <th class="p-3 rounded-tl-lg">ID Viagem</th>
+                            <th class="p-3">Veículo Placa</th>
+                            <th class="p-3">Motorista Nome</th>
+                            <th class="p-3">Odômetro Inicial</th>
+                            <th class="p-3 rounded-tr-lg">Odômetro Final</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-viagens" class="divide-y divide-zinc-700"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalGlobal"
+        class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center transition-opacity z-50">
+        <div class="bg-zinc-800 border border-zinc-700 p-6 rounded-lg w-full max-w-md shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="modalTitulo" class="text-xl font-bold text-white">Título</h2>
+                <button onclick="fecharModalGlobal()"
+                    class="text-zinc-400 hover:text-red-500 font-bold text-2xl leading-none">&times;</button>
+            </div>
+
+            <div id="modalConteudo" class="space-y-4 mb-6"></div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-zinc-700">
+                <button onclick="fecharModalGlobal()"
+                    class="bg-zinc-700 hover:bg-zinc-600 text-white font-semibold py-2 px-4 rounded transition-colors">
+                    Cancelar
+                </button>
+                <button id="modalBtnAcao" class="text-white font-semibold py-2 px-4 rounded transition-colors">
+                    Ação
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
